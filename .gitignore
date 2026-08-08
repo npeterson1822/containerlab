@@ -1,0 +1,9 @@
+# Containerlab generated runtime directories
+**/clab-*/
+
+# Containerlab generated annotations
+*.clab.yml.annotations.json
+
+# OS files
+.DS_Store
+Thumbs.db
