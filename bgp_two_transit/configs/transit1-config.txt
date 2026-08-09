@@ -1,0 +1,33 @@
+Current configuration:
+!
+frr version 8.4_git
+frr defaults traditional
+hostname transit1
+no ipv6 forwarding
+!
+interface eth1
+ ip address 203.0.113.3/31
+exit
+!
+interface eth2
+ ip address 10.0.0.100/24
+exit
+!
+interface lo
+ ip address 100.0.0.1/32
+exit
+!
+router bgp 65001
+ neighbor 203.0.113.2 remote-as 65000
+ !
+ address-family ipv4 unicast
+  network 100.0.0.1/32
+  neighbor 203.0.113.2 route-map PREFIX-ALL in
+  neighbor 203.0.113.2 route-map PREFIX-ALL out
+ exit-address-family
+exit
+!
+route-map PREFIX-ALL permit 10
+exit
+!
+end

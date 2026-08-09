@@ -1,0 +1,56 @@
+Current configuration:
+!
+frr version 8.4_git
+frr defaults traditional
+hostname edge1
+no ipv6 forwarding
+!
+interface eth1
+ ip address 203.0.113.2/31
+exit
+!
+interface eth2
+ ip address 192.168.11.0/31
+exit
+!
+interface eth3
+ ip address 192.168.12.0/31
+exit
+!
+interface eth4
+ ip address 10.0.0.10/24
+exit
+!
+interface lo
+ ip address 1.1.1.1/32
+exit
+!
+router bgp 65000
+ neighbor 3.3.3.3 remote-as 65000
+ neighbor 3.3.3.3 update-source lo
+ neighbor 4.4.4.4 remote-as 65000
+ neighbor 4.4.4.4 update-source lo
+ neighbor 203.0.113.3 remote-as 65001
+ !
+ address-family ipv4 unicast
+  neighbor 3.3.3.3 next-hop-self
+  neighbor 3.3.3.3 route-map PREFIX-ALL in
+  neighbor 3.3.3.3 route-map PREFIX-ALL out
+  neighbor 4.4.4.4 next-hop-self
+  neighbor 4.4.4.4 route-map PREFIX-ALL in
+  neighbor 4.4.4.4 route-map PREFIX-ALL out
+  neighbor 203.0.113.3 route-map PREFIX-ALL in
+  neighbor 203.0.113.3 route-map PREFIX-ALL out
+ exit-address-family
+exit
+!
+router ospf
+ ospf router-id 1.1.1.1
+ network 1.1.1.1/32 area 0
+ network 192.168.0.0/16 area 0
+exit
+!
+route-map PREFIX-ALL permit 10
+exit
+!
+end
