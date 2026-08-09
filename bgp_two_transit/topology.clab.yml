@@ -1,0 +1,70 @@
+name: dual-transit
+
+topology:
+  nodes:
+    edge1:
+      kind: linux
+      image: frrouting/frr
+      labels:
+        graph-pos: "1,1"
+        role: "edge"
+        as: "65000"
+    edge2:
+      kind: linux
+      image: frrouting/frr
+      labels:
+        graph-pos: "3,3"
+        role: "edge"
+        as: "65000"
+    core1:
+      kind: linux
+      image: frrouting/frr
+      labels:
+        graph-pos: "2,1"
+        role: "core"
+        as: "65000"
+    core2:
+      kind: linux
+      image: frrouting/frr
+      labels:
+        graph-pos: "2,3"
+        role: "core"
+        as: "65000"
+    transit1:
+      kind: linux
+      image: frrouting/frr
+      labels:
+        graph-pos: "1,0"
+        role: "transit"
+        as: "65010"
+    transit2:
+      kind: linux
+      image: frrouting/frr
+      labels:
+        graph-pos: "3,4"
+        role: "transit"
+        as: "65020"
+    devbox:
+      kind: linux
+      image: alpine:3.20
+      labels:
+        graph-pos: 4,2
+        role: management
+
+  links:
+    - endpoints: [ "transit1:eth1", "edge1:eth1" ]
+    - endpoints: [ "edge1:eth2", "core1:eth1" ]
+    - endpoints: [ "edge1:eth3", "core2:eth1" ]
+    - endpoints: [ "core1:eth2", "core2:eth2" ]
+    - endpoints: [ "core1:eth3", "edge2:eth1" ]
+    - endpoints: [ "core2:eth3", "edge2:eth2" ]
+    - endpoints: [ "edge2:eth3", "transit2:eth1" ]
+
+    # Dedicated management network. This is intentionally separate
+    # from the routing underlay and is not part of OSPF/IS-IS.
+    - endpoints: [ "edge1:eth4", "devbox:eth1" ]
+    - endpoints: [ "edge2:eth4", "devbox:eth2" ]
+    - endpoints: [ "core1:eth4", "devbox:eth3" ]
+    - endpoints: [ "core2:eth4", "devbox:eth4" ]
+    - endpoints: [ "transit1:eth2", "devbox:eth5" ]
+    - endpoints: [ "transit2:eth2", "devbox:eth6" ]
